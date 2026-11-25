@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LEGAL SMS PANEL — Instant Virtual Numbers &amp; OTP</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            crimson: {
+              500: '#ef4444',
+              600: '#dc2626',
+              700: '#b91c1c',
+              800: '#991b1b',
+              900: '#7f1d1d',
+              950: '#450a0a',
+            },
+            obsidian: {
+              850: '#140c0e',
+              900: '#0f090b',
+              950: '#080506',
+            }
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap');
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background-color: #080506;
+      color: #f9fafb;
+    }
+
+    .font-mono-code {
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .glass-card {
+      background: linear-gradient(145deg, rgba(26, 12, 16, 0.92), rgba(12, 7, 9, 0.96));
+      border: 1px solid rgba(239, 68, 68, 0.18);
+      box-shadow: 0 18px 40px -15px rgba(0, 0, 0, 0.75);
+    }
+
+    .neon-border-red {
+      box-shadow: 0 0 0 1px rgba(239, 68, 68, 0.35), 0 0 24px -4px rgba(220, 38, 38, 0.35);
+    }
+
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0d0709;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #450a0a;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #991b1b;
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-obsidian-950 text-gray-100 selection:bg-red-600 selection:text-white">
+
+  <!-- Top Navigation Bar -->
+  <header class="sticky top-0 z-40 border-b border-red-900/40 bg-obsidian-950/90 backdrop-blur-xl">
+    <div class="mx-auto flex max-w-7xl items-center justify-between px-4 py-3.5 sm:px-6 lg:px-8">
+      <!-- Brand -->
+      <div class="flex items-center gap-3">
+        <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-red-600 to-red-900 shadow-lg shadow-red-900/40 ring-1 ring-red-400/30">
+          <svg class="h-5 w-5 text-white" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+          </svg>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="text-lg font-extrabold tracking-tight text-white">LEGAL SMS PANEL</span>
+            <span class="hidden rounded-full border border-red-500/30 bg-red-950/80 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-red-300 sm:inline-block">
+              LIVE GATEWAY
+            </span>
+          </div>
+          <p class="text-xs text-gray-400">Instant Virtual Numbers &amp; OTP Verification</p>
+        </div>
+      </div>
+
+      <!-- Nav Tabs (Desktop) -->
+      <nav class="hidden items-center gap-1 rounded-xl border border-red-900/30 bg-obsidian-900/90 p-1 md:flex">
+        <button onclick="switchTab('numbers')" id="nav-numbers" class="nav-btn rounded-lg bg-red-600 px-4 py-2 text-xs font-semibold text-white shadow transition">
+          Get Numbers
+        </button>
+        <button onclick="switchTab('inbox')" id="nav-inbox" class="nav-btn rounded-lg px-4 py-2 text-xs font-semibold text-gray-300 transition hover:bg-red-950/60 hover:text-white">
+          OTP Inbox <span id="inbox-badge" class="ml-1 rounded-full bg-red-500/20 px-1.5 py-0.5 text-[10px] text-red-300">0</span>
+        </button>
+        <button onclick="switchTab('history')" id="nav-history" class="nav-btn rounded-lg px-4 py-2 text-xs font-semibold text-gray-300 transition hover:bg-red-950/60 hover:text-white">
+          Deposit &amp; Orders
+        </button>
+      </nav>
+
+      <!-- Wallet & Deposit CTA -->
+      <div class="flex items-center gap-2.5 sm:gap-3">
+        <div class="flex items-center gap-2 rounded-xl border border-red-800/40 bg-obsidian-900 px-3 py-2">
+          <span class="text-[11px] font-medium uppercase tracking-wider text-gray-400">Balance</span>
+          <span id="wallet-balance" class="font-mono-code text-sm font-bold text-emerald-400 sm:text-base">₹0.00</span>
+        </div>
+        <button onclick="openDepositModal()" class="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-red-600 to-red-700 px-3.5 py-2 text-xs font-bold text-white shadow-lg shadow-red-900/40 transition hover:from-red-500 hover:to-red-600 active:scale-[0.98] sm:px-4 sm:text-sm">
+          <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+          </svg>
+          <span>Add Funds</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile Nav -->
+    <div class="flex border-t border-red-900/30 bg-obsidian-950 px-2 py-1.5 md:hidden">
+      <button onclick="switchTab('numbers')" id="mnav-numbers" class="mnav-btn flex-1 rounded-lg bg-red-600 py-1.5 text-xs font-semibold text-white">
+        Get Numbers
+      </button>
+      <button onclick="switchTab('inbox')" id="mnav-inbox" class="mnav-btn flex-1 rounded-lg py-1.5 text-xs font-semibold text-gray-300">
+        OTP Inbox (<span id="minbox-badge">0</span>)
+      </button>
+      <button onclick="switchTab('history')" id="mnav-history" class="mnav-btn flex-1 rounded-lg py-1.5 text-xs font-semibold text-gray-300">
+        History
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+
+    <!-- Top Summary Banner -->
+    <section class="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div class="glass-card rounded-2xl p-4">
+        <p class="text-xs font-medium uppercase tracking-wider text-gray-400">Panel Status</p>
+        <div class="mt-2 flex items-center gap-2">
+          <span class="h-2.5 w-2.5 animate-pulse rounded-full bg-emerald-400"></span>
+          <span class="text-base font-bold text-white">Online &amp; Instant</span>
+        </div>
+        <p class="mt-1 text-xs text-gray-400">Fast SMS delivery &amp; auto-refunds</p>
+      </div>
+
+      <div class="glass-card rounded-2xl p-4">
+        <p class="text-xs font-medium uppercase tracking-wider text-gray-400">Minimum Deposit</p>
+        <p class="mt-2 font-mono-code text-xl font-extrabold text-red-400">₹50.00</p>
+        <p class="mt-1 text-xs text-gray-400">UPI QR instant credit rule</p>
+      </div>
+
+      <div class="glass-card rounded-2xl p-4">
+        <p class="text-xs font-medium uppercase tracking-wider text-gray-400">UTR Verification</p>
+        <p class="mt-2 font-mono-code text-sm font-bold text-amber-300">111111111111</p>
+        <p class="mt-1 text-xs text-gray-400">Only exact UTR is approved</p>
+      </div>
+
+      <div class="glass-card rounded-2xl p-4">
+        <p class="text-xs font-medium uppercase tracking-wider text-gray-400">Active Numbers</p>
+        <p id="stat-active-numbers" class="mt-2 font-mono-code text-xl font-extrabold text-white">38</p>
+        <p class="mt-1 text-xs text-gray-400">Ready for OTP verification</p>
+      </div>
+    </section>
+
+    <!-- TAB 1: GET NUMBERS -->
+    <section id="tab-numbers" class="tab-panel space-y-6">
+      <div class="grid grid-cols-1 gap-6 lg:grid-cols-12">
+
+        <!-- Left / Main: Service & Country Selector -->
+        <div class="space-y-5 lg:col-span-8">
+          <div class="glass-card rounded-2xl p-5 sm:p-6">
+            <div class="flex flex-col justify-between gap-4 border-b border-red-900/30 pb-4 sm:flex-row sm:items-center">
+              <div>
+                <h1 class="text-xl font-bold text-white sm:text-2xl">Select Service &amp; Virtual Number</h1>
+                <p class="mt-1 text-xs text-gray-400 sm:text-sm">Choose your target platform, country route, and rent an instant number.</p>
+              </div>
+              <div class="relative w-full sm:w-64">
+                <input id="service-search" oninput="renderServices()" type="text" placeholder="Search service..." class="w-full rounded-xl border border-red-900/40 bg-obsidian-950 py-2 pl-9 pr-3 text-sm text-white placeholder-gray-500 focus:border-red-500 focus:outline-none" />
+                <svg class="absolute left-3 top-2.5 h-4 w-4 text-gray-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 103.5 10.5a7.5 7.5 0 0013.15 6.15z" />
+                </svg>
+              </div>
+            </div>
+
+            <!-- Country Selector -->
+            <div class="mt-5">
+              <label class="mb-2.5 block text-xs font-semibold uppercase tracking-wider text-gray-400">1. Choose Country Route</label>
+              <div id="country-list" class="grid grid-cols-2 gap-2.5 sm:grid-cols-4"></div>
+            </div>
+
+            <!-- Any OTP Universal Banner -->
+            <div class="mt-6">
+              <label class="mb-2.5 block text-xs font-semibold uppercase tracking-wider text-gray-400">2. Universal Option</label>
+              <div id="any-otp-banner"></div>
+            </div>
+
+            <!-- ALL SERVICES Grid -->
+            <div class="mt-6">
+              <div class="mb-3 flex items-center justify-between">
+                <label class="text-xs font-semibold uppercase tracking-wider text-gray-400">3. All Services</label>
+                <span id="service-count-label" class="text-xs text-gray-400">14 services</span>
+              </div>
+              <div id="service-grid" class="grid grid-cols-2 gap-3 sm:grid-cols-3"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Order Checkout Box -->
+        <div class="lg:col-span-4">
+          <div class="glass-card neon-border-red sticky top-24 rounded-2xl p-5 sm:p-6">
+            <div class="flex items-center justify-between border-b border-red-900/30 pb-3.5">
+              <h2 class="text-base font-bold text-white">Order Summary</h2>
+              <span class="rounded-md bg-red-950 px-2 py-1 font-mono-code text-[11px] font-semibold text-red-300">INSTANT SMS</span>
+            </div>
+
+            <div class="mt-4 space-y-3 text-sm">
+              <div class="flex items-center justify-between">
+                <span class="text-gray-400">Selected Service</span>
+                <span id="summary-service" class="font-semibold text-white">WhatsApp</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-gray-400">Country</span>
+                <span id="summary-country" class="font-semibold text-white">🇮🇳 India (+91)</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-gray-400">Validity Window</span>
+                <span class="font-mono-code text-xs font-medium text-gray-200">15 Minutes</span>
+              </div>
+              <div class="flex items-center justify-between border-t border-red-900/30 pt-3">
+                <span class="text-gray-300">Price</span>
+                <span id="summary-price" class="font-mono-code text-xl font-extrabold text-red-400">₹6.00</span>
+              </div>
+            </div>
+
+            <div id="balance-warning" class="mt-4 hidden rounded-xl border border-amber-500/30 bg-amber-950/40 p-3 text-xs text-amber-200">
+              Insufficient wallet balance. Deposit at least <strong class="text-white">₹50</strong> using UTR <span class="font-mono-code">111111111111</span> to add funds.
+            </div>
+
+            <button onclick="buyNumber()" class="mt-5 w-full rounded-xl bg-gradient-to-r from-red-600 to-red-700 py-3 text-sm font-bold text-white shadow-lg shadow-red-900/40 transition hover:from-red-500 hover:to-red-600 active:scale-[0.99]">
+              Buy Number Now
+            </button>
+
+            <button onclick="openDepositModal()" class="mt-2.5 w-full rounded-xl border border-red-800/50 bg-obsidian-950/80 py-2.5 text-xs font-semibold text-red-300 transition hover:bg-red-950/50 hover:text-white">
+              + Deposit Funds (Min ₹50)
+            </button>
+
+            <div class="mt-5 rounded-xl border border-red-900/25 bg-obsidian-950/70 p-3.5 text-[11px] leading-relaxed text-gray-400">
+              <p class="font-semibold text-gray-200">How it works:</p>
+              <p class="mt-1">1. Add minimum ₹50 via UPI QR &amp; submit UTR <span class="font-mono-code text-red-300">111111111111</span>.</p>
+              <p class="mt-0.5">2. Select a service &amp; click <strong class="text-gray-200">Buy Number Now</strong>.</p>
+              <p class="mt-0.5">3. Copy the number &amp; receive your OTP inside <strong class="text-gray-200">OTP Inbox</strong>.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- TAB 2: OTP INBOX -->
+    <section id="tab-inbox" class="tab-panel hidden space-y-4">
+      <div class="glass-card rounded-2xl p-5 sm:p-6">
+        <div class="flex flex-col justify-between gap-3 border-b border-red-900/30 pb-4 sm:flex-row sm:items-center">
+          <div>
+            <h2 class="text-xl font-bold text-white">Live OTP Inbox</h2>
+            <p class="text-xs text-gray-400 sm:text-sm">Active virtual numbers and incoming verification codes.</p>
+          </div>
+          <button onclick="switchTab('numbers')" class="inline-flex items-center justify-center rounded-xl bg-red-600 px-4 py-2 text-xs font-bold text-white transition hover:bg-red-500">
+            + Rent Another Number
+          </button>
+        </div>
+
+        <div id="inbox-container" class="mt-5 space-y-4"></div>
+      </div>
+    </section>
+
+    <!-- TAB 3: DEPOSIT & ORDER HISTORY -->
+    <section id="tab-history" class="tab-panel hidden space-y-6">
+      <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <!-- Deposit History -->
+        <div class="glass-card rounded-2xl p-5 sm:p-6">
+          <h2 class="text-lg font-bold text-white">Deposit Logs</h2>
+          <p class="mt-0.5 text-xs text-gray-400">Only UTR <span class="font-mono-code text-red-300">111111111111</span> with amount ≥ ₹50 is approved.</p>
+          <div id="deposit-history-list" class="mt-4 space-y-3"></div>
+        </div>
+
+        <!-- Number Orders History -->
+        <div class="glass-card rounded-2xl p-5 sm:p-6">
+          <h2 class="text-lg font-bold text-white">Number Orders</h2>
+          <p class="mt-0.5 text-xs text-gray-400">All virtual numbers rented from LEGAL SMS PANEL.</p>
+          <div id="order-history-list" class="mt-4 space-y-3"></div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- DEPOSIT MODAL (Min ₹50 + Strict UTR 111111111111) -->
+  <div id="deposit-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 p-4 backdrop-blur-sm">
+    <div class="glass-card neon-border-red relative max-h-[92vh] w-full max-w-md overflow-y-auto rounded-2xl p-5 sm:p-6">
+      <div class="flex items-center justify-between border-b border-red-900/30 pb-3.5">
+        <div>
+          <h3 class="text-lg font-bold text-white">Add Funds via UPI QR</h3>
+          <p class="text-xs text-gray-400">Minimum deposit: <span class="font-semibold text-red-400">₹50</span></p>
+        </div>
+        <button onclick="closeDepositModal()" class="rounded-lg p-1.5 text-gray-400 transition hover:bg-red-950 hover:text-white">
+          <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <form onsubmit="handleDepositSubmit(event)" class="mt-4 space-y-4">
+        <!-- QR Card (No name above QR card) -->
+        <div class="rounded-2xl border border-amber-400/30 bg-[#1b150c] p-4 text-center">
+          <div class="mx-auto w-56 rounded-2xl bg-[#f4d483] p-3.5 text-gray-900 shadow-xl">
+            <p class="mb-2 font-mono-code text-xs font-bold tracking-tight text-gray-900">prashants1078@fam</p>
+            <div class="mx-auto flex h-40 w-40 items-center justify-center rounded-xl bg-white p-2 shadow-inner">
+              <img id="upi-qr-img" src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=upi%3A%2F%2Fpay%3Fpa%3Dprashants1078%40fam%26pn%3DLEGAL%2520SMS%2520PANEL%26am%3D50%26cu%3DINR" alt="UPI QR Code" class="h-full w-full object-contain" />
+            </div>
+            <div class="mt-2.5 flex items-center justify-center gap-1.5 text-xs font-extrabold tracking-wide text-gray-900">
+              <span>triö</span>
+              <span class="rounded bg-gray-900 px-1.5 py-0.5 text-[10px] font-bold text-[#f4d483]">UPI</span>
+            </div>
+          </div>
+
+          <div class="mt-3 flex items-center justify-center gap-2">
+            <span class="font-mono-code text-xs text-amber-200">prashants1078@fam</span>
+            <button type="button" onclick="copyUpiId()" class="rounded-lg border border-amber-400/30 bg-amber-500/10 px-2.5 py-1 text-[11px] font-semibold text-amber-300 transition hover:bg-amber-500/20">
+              Copy UPI
+            </button>
+          </div>
+        </div>
+
+        <!-- Amount Input -->
+        <div>
+          <label for="deposit-amount" class="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-gray-300">
+            Deposit Amount (₹) — Min ₹50
+          </label>
+          <input id="deposit-amount" type="number" min="1" step="1" value="50" oninput="updateQrAmount()" required class="font-mono-code w-full rounded-xl border border-red-900/40 bg-obsidian-950 px-3.5 py-2.5 text-sm font-bold text-white focus:border-red-500 focus:outline-none" />
+          <div class="mt-2 grid grid-cols-4 gap-2">
+            <button type="button" onclick="setQuickAmount(50)" class="rounded-lg border border-red-900/40 bg-obsidian-950 py-1.5 font-mono-code text-xs font-semibold text-gray-200 hover:border-red-500 hover:text-white">₹50</button>
+            <button type="button" onclick="setQuickAmount(100)" class="rounded-lg border border-red-900/40 bg-obsidian-950 py-1.5 font-mono-code text-xs font-semibold text-gray-200 hover:border-red-500 hover:text-white">₹100</button>
+            <button type="button" onclick="setQuickAmount(200)" class="rounded-lg border border-red-900/40 bg-obsidian-950 py-1.5 font-mono-code text-xs font-semibold text-gray-200 hover:border-red-500 hover:text-white">₹200</button>
+            <button type="button" onclick="setQuickAmount(500)" class="rounded-lg border border-red-900/40 bg-obsidian-950 py-1.5 font-mono-code text-xs font-semibold text-gray-200 hover:border-red-500 hover:text-white">₹500</button>
+          </div>
+        </div>
+
+        <!-- UTR Input -->
+        <div>
+          <div class="mb-1.5 flex items-center justify-between">
+            <label for="deposit-utr" class="text-xs font-semibold uppercase tracking-wider text-gray-300">
+              12-Digit UTR / Reference No.
+            </label>
+            <span class="font-mono-code text-[11px] text-amber-300">Valid: 111111111111</span>
+          </div>
+          <input id="deposit-utr" type="text" maxlength="24" placeholder="Enter UTR (e.g. 111111111111)" required class="font-mono-code w-full rounded-xl border border-red-900/40 bg-obsidian-950 px-3.5 py-2.5 text-sm tracking-wider text-white placeholder-gray-600 focus:border-red-500 focus:outline-none" />
+        </div>
+
+        <!-- Validation Feedback -->
+        <div id="deposit-feedback" class="hidden rounded-xl p-3 text-xs font-medium"></div>
+
+        <button type="submit" class="w-full rounded-xl bg-gradient-to-r from-red-600 to-red-700 py-3 text-sm font-bold text-white shadow-lg shadow-red-900/40 transition hover:from-red-500 hover:to-red-600">
+          Verify &amp; Add Funds
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="pointer-events-none fixed bottom-5 right-5 z-50 translate-y-4 opacity-0 transition-all duration-300">
+    <div id="toast-box" class="flex items-center gap-2.5 rounded-xl border border-red-500/40 bg-obsidian-900 px-4 py-3 text-xs font-semibold text-white shadow-2xl sm:text-sm">
+      <span id="toast-icon"></span>
+      <span id="toast-message"></span>
+    </div>
+  </div>
+
+  <script>
+    const MIN_DEPOSIT = 50;
+    const REQUIRED_UTR = '111111111111';
+    const BASE_ACTIVE_NUMBERS = 38;
+    const UPI_ID = 'prashants1078@fam';
+
+    const COUNTRIES = [
+      { id: 'IN', name: 'India', code: '+91', flag: '🇮🇳', mult: 1 },
+      { id: 'US', name: 'United States', code: '+1', flag: '🇺🇸', mult: 1.5 },
+      { id: 'GB', name: 'United Kingdom', code: '+44', flag: '🇬🇧', mult: 1.4 },
+      { id: 'ID', name: 'Indonesia', code: '+62', flag: '🇮🇩', mult: 1.1 }
+    ];
+
+    const UNIVERSAL_SERVICE = {
+      id: 'any-otp',
+      name: 'Any OTP',
+      subtitle: 'Universal — receive any SMS',
+      price: 32,
+      badge: 'ANY OTP',
+      accent: 'from-amber-500 to-red-600',
+      iconText: 'OTP'
+    };
+
+    // WhatsApp = ₹6, Telegram = ₹7; all other services > ₹15 with distinct prices
+    const SERVICES = [
+      { id: 'blinkit', name: 'Blinkit', price: 18, badge: 'blinkit', bg: 'bg-amber-400 text-gray-950', icon: 'b' },
+      { id: 'swiggy', name: 'Swiggy', price: 22, badge: 'Swiggy', bg: 'bg-orange-500 text-white', icon: 'S' },
+      { id: 'flipkart', name: 'Flipkart', price: 25, badge: 'Flipkart', bg: 'bg-blue-600 text-white', icon: 'F' },
+      { id: 'zomato', name: 'Zomato', price: 23, badge: 'zomato', bg: 'bg-rose-600 text-white', icon: 'Z' },
+      { id: 'amazon', name: 'Amazon', price: 26, badge: 'amazon', bg: 'bg-slate-800 text-amber-400 ring-1 ring-amber-400/40', icon: 'a' },
+      { id: 'meesho', name: 'Meesho', price: 21, badge: 'meesho', bg: 'bg-pink-600 text-white', icon: 'm' },
+      { id: 'shein', name: 'Shein', price: 24, badge: 'SHEIN', bg: 'bg-neutral-900 text-white ring-1 ring-white/25', icon: 'S' },
+      { id: 'bigbasket', name: 'BigBasket', price: 20, badge: 'bb', bg: 'bg-lime-500 text-gray-950', icon: 'bb' },
+      { id: 'telegram', name: 'Telegram', price: 7, badge: 'Telegram', bg: 'bg-sky-500 text-white', icon: '✈' },
+      { id: 'whatsapp', name: 'WhatsApp', price: 6, badge: 'WhatsApp', bg: 'bg-emerald-500 text-white', icon: '✆' },
+      { id: 'airtel', name: 'Airtel', price: 19, badge: 'Airtel', bg: 'bg-red-600 text-white', icon: 'A' },
+      { id: 'indane-gas', name: 'Indane Gas', price: 16, badge: 'Indane', bg: 'bg-orange-600 text-white', icon: '🔥' },
+      { id: 'jio', name: 'Jio / MyJio', price: 17, badge: 'Jio', bg: 'bg-indigo-600 text-white', icon: 'Jio' },
+      { id: 'telegram-vip', name: 'Telegram V2 (VIP)', price: 35, badge: 'VIP', bg: 'bg-gradient-to-br from-fuchsia-600 to-red-600 text-white', icon: '★', vip: true }
+    ];
+
+    const state = {
+      balance: 0,
+      selectedCountryId: 'IN',
+      selectedServiceId: 'whatsapp',
+      rentedNumbers: [],
+      deposits: []
+    };
+
+    function formatINR(amount) {
+      return '₹' + Number(amount).toFixed(2);
+    }
+
+    function getUnitPrice(service) {
+      const country = COUNTRIES.find(c => c.id === state.selectedCountryId) || COUNTRIES[0];
+      if (country.id === 'IN') return service.price;
+      return Math.round(service.price * country.mult);
+    }
+
+    function getSelectedServiceObj() {
+      if (state.selectedServiceId === UNIVERSAL_SERVICE.id) return UNIVERSAL_SERVICE;
+      return SERVICES.find(s => s.id === state.selectedServiceId) || SERVICES.find(s => s.id === 'whatsapp');
+    }
+
+    function showToast(message, type = 'info') {
+      const toast = document.getElementById('toast');
+      const box = document.getElementById('toast-box');
+      const icon = document.getElementById('toast-icon');
+      const msg = document.getElementById('toast-message');
+
+      msg.textContent = message;
+      if (type === 'success') {
+        box.className = 'flex items-center gap-2.5 rounded-xl border border-emerald-500/50 bg-emerald-950/95 px-4 py-3 text-xs font-semibold text-emerald-100 shadow-2xl sm:text-sm';
+        icon.textContent = '✓';
+      } else if (type === 'error') {
+        box.className = 'flex items-center gap-2.5 rounded-xl border border-red-500/60 bg-red-950/95 px-4 py-3 text-xs font-semibold text-red-100 shadow-2xl sm:text-sm';
+        icon.textContent = '✕';
+      } else {
+        box.className = 'flex items-center gap-2.5 rounded-xl border border-amber-500/50 bg-obsidian-900 px-4 py-3 text-xs font-semibold text-amber-200 shadow-2xl sm:text-sm';
+        icon.textContent = 'ℹ';
+      }
+
+      toast.classList.remove('translate-y-4', 'opacity-0');
+      clearTimeout(window.__toastTimer);
+      window.__toastTimer = setTimeout(() => {
+        toast.classList.add('translate-y-4', 'opacity-0');
+      }, 3200);
+    }
+
+    function switchTab(tabName) {
+      document.querySelectorAll('.tab-panel').forEach(el => el.classList.add('hidden'));
+      document.getElementById('tab-' + tabName).classList.remove('hidden');
+
+      document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.classList.remove('bg-red-600', 'text-white', 'shadow');
+        btn.classList.add('text-gray-300');
+      });
+      const activeDesktop = document.getElementById('nav-' + tabName);
+      if (activeDesktop) {
+        activeDesktop.classList.add('bg-red-600', 'text-white', 'shadow');
+        activeDesktop.classList.remove('text-gray-300');
+      }
+
+      document.querySelectorAll('.mnav-btn').forEach(btn => {
+        btn.classList.remove('bg-red-600', 'text-white');
+        btn.classList.add('text-gray-300');
+      });
+      const activeMobile = document.getElementById('mnav-' + tabName);
+      if (activeMobile) {
+        activeMobile.classList.add('bg-red-600', 'text-white');
+        activeMobile.classList.remove('text-gray-300');
+      }
+
+      if (tabName === 'inbox') renderInbox();
+      if (tabName === 'history') renderHistory();
+    }
+
+    function renderCountries() {
+      const container = document.getElementById('country-list');
+      container.innerHTML = COUNTRIES.map(c => {
+        const active = c.id === state.selectedCountryId;
+        return `
+          <button type="button" onclick="selectCountry('${c.id}')" class="flex items-center justify-between rounded-xl border px-3 py-2.5 text-left transition ${
+            active
+              ? 'border-red-500 bg-red-950/70 text-white shadow-md shadow-red-950/60'
+              : 'border-red-900/30 bg-obsidian-950/70 text-gray-300 hover:border-red-800/60 hover:text-white'
+          }">
+            <span class="flex items-center gap-2 text-xs font-semibold sm:text-sm">
+              <span>${c.flag}</span>
+              <span>${c.name}</span>
+            </span>
+            <span class="font-mono-code text-[11px] text-gray-400">${c.code}</span>
+          </button>
+        `;
+      }).join('');
+    }
+
+    function selectCountry(countryId) {
+      state.selectedCountryId = countryId;
+      renderCountries();
+      renderAnyOtpBanner();
+      renderServices();
+      updateOrderSummary();
+    }
+
+    function renderAnyOtpBanner() {
+      const container = document.getElementById('any-otp-banner');
+      const selected = state.selectedServiceId === UNIVERSAL_SERVICE.id;
+      const price = getUnitPrice(UNIVERSAL_SERVICE);
+
+      container.innerHTML = `
+        <button type="button" onclick="selectService('${UNIVERSAL_SERVICE.id}')" class="group relative flex w-full items-center justify-between gap-3 rounded-2xl border p-4 text-left transition ${
+          selected
+            ? 'border-amber-400 bg-gradient-to-r from-red-950/90 via-[#261114] to-amber-950/40 shadow-lg shadow-red-950/70'
+            : 'border-red-900/35 bg-obsidian-950/80 hover:border-amber-500/50'
+        }">
+          <div class="flex items-center gap-3.5">
+            <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br ${UNIVERSAL_SERVICE.accent} font-mono-code text-xs font-extrabold text-white shadow-md">
+              ${UNIVERSAL_SERVICE.iconText}
+            </div>
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="text-sm font-bold text-white sm:text-base">${UNIVERSAL_SERVICE.name}</span>
+                <span class="rounded bg-amber-500/20 px-1.5 py-0.5 text-[10px] font-bold uppercase text-amber-300">ALL APPS</span>
+              </div>
+              <p class="mt-0.5 text-xs text-gray-400">${UNIVERSAL_SERVICE.subtitle}</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="font-mono-code rounded-xl bg-red-600/20 px-3 py-1.5 text-sm font-extrabold text-red-300 ring-1 ring-red-500/30">
+              ₹${price}
+            </span>
+            <span class="text-gray-400 transition group-hover:translate-x-0.5 group-hover:text-white">›</span>
+          </div>
+        </button>
+      `;
+    }
+
+    function renderServices() {
+      const query = (document.getElementById('service-search').value || '').trim().toLowerCase();
+      const filtered = SERVICES.filter(s => s.name.toLowerCase().includes(query));
+      document.getElementById('service-count-label').textContent = `${filtered.length} services`;
+
+      const grid = document.getElementById('service-grid');
+      if (filtered.length === 0) {
+        grid.innerHTML = `<div class="col-span-full rounded-xl border border-red-900/30 bg-obsidian-950/60 p-6 text-center text-sm text-gray-400">No service matches "${query}".</div>`;
+        return;
+      }
+
+      grid.innerHTML = filtered.map(service => {
+        const active = state.selectedServiceId === service.id;
+        const price = getUnitPrice(service);
+        return `
+          <button type="button" onclick="selectService('${service.id}')" class="relative flex flex-col items-center justify-between rounded-2xl border p-3.5 text-center transition ${
+            active
+              ? 'border-red-500 bg-red-950/75 shadow-lg shadow-red-950/70'
+              : 'border-red-900/30 bg-obsidian-950/75 hover:border-red-700/60 hover:bg-obsidian-900'
+          }">
+            ${service.vip ? '<span class="absolute right-2.5 top-2.5 rounded-full bg-gradient-to-r from-amber-400 to-orange-500 px-2 py-0.5 text-[9px] font-extrabold uppercase tracking-wider text-gray-950 shadow">VIP</span>' : ''}
+            <div class="flex h-12 w-12 items-center justify-center rounded-2xl ${service.bg} text-base font-extrabold shadow-md">
+              ${service.icon}
+            </div>
+            <div class="mt-2.5 w-full">
+              <p class="truncate text-xs font-bold text-white sm:text-sm">${service.name}</p>
+              <p class="font-mono-code mt-1 text-xs font-extrabold text-red-400 sm:text-sm">₹${price}</p>
+            </div>
+          </button>
+        `;
+      }).join('');
+    }
+
+    function selectService(serviceId) {
+      state.selectedServiceId = serviceId;
+      renderAnyOtpBanner();
+      renderServices();
+      updateOrderSummary();
+    }
+
+    function updateOrderSummary() {
+      const service = getSelectedServiceObj();
+      const country = COUNTRIES.find(c => c.id === state.selectedCountryId) || COUNTRIES[0];
+      const price = getUnitPrice(service);
+
+      document.getElementById('summary-service').textContent = service.name;
+      document.getElementById('summary-country').textContent = `${country.flag} ${country.name} (${country.code})`;
+      document.getElementById('summary-price').textContent = formatINR(price);
+
+      const warn = document.getElementById('balance-warning');
+      if (state.balance < price) {
+        warn.classList.remove('hidden');
+      } else {
+        warn.classList.add('hidden');
+      }
+    }
+
+    function updateHeaderStats() {
+      document.getElementById('wallet-balance').textContent = formatINR(state.balance);
+      const activeCount = BASE_ACTIVE_NUMBERS + state.rentedNumbers.length;
+      document.getElementById('stat-active-numbers').textContent = String(activeCount);
+      document.getElementById('inbox-badge').textContent = String(state.rentedNumbers.length);
+      document.getElementById('minbox-badge').textContent = String(state.rentedNumbers.length);
+    }
+
+    function generatePhoneNumber(country) {
+      const randDigits = (len) => Array.from({ length: len }, () => Math.floor(Math.random() * 10)).join('');
+      if (country.id === 'IN') {
+        const first = ['9', '8', '7', '6'][Math.floor(Math.random() * 4)];
+        return `+91 ${first}${randDigits(4)} ${randDigits(5)}`;
+      }
+      if (country.id === 'US') return `+1 (${randDigits(3)}) ${randDigits(3)}-${randDigits(4)}`;
+      if (country.id === 'GB') return `+44 7${randDigits(3)} ${randDigits(6)}`;
+      return `+62 8${randDigits(2)}-${randDigits(4)}-${randDigits(4)}`;
+    }
+
+    function buyNumber() {
+      const service = getSelectedServiceObj();
+      const country = COUNTRIES.find(c => c.id === state.selectedCountryId) || COUNTRIES[0];
+      const price = getUnitPrice(service);
+
+      if (state.balance < price) {
+        showToast(`Insufficient balance! Need ${formatINR(price)} (Min deposit ₹50).`, 'error');
+        openDepositModal();
+        return;
+      }
+
+      state.balance -= price;
+      const order = {
+        id: 'ORD-' + Math.floor(100000 + Math.random() * 900000),
+        serviceName: service.name,
+        countryLabel: `${country.flag} ${country.name}`,
+        phone: generatePhoneNumber(country),
+        price,
+        otp: null,
+        createdAt: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      };
+
+      state.rentedNumbers.unshift(order);
+      updateHeaderStats();
+      updateOrderSummary();
+      renderInbox();
+      renderHistory();
+      showToast(`Rented ${order.phone} for ${service.name} (${formatINR(price)})`, 'success');
+      switchTab('inbox');
+    }
+
+    function simulateOtp(orderId) {
+      const item = state.rentedNumbers.find(o => o.id === orderId);
+      if (!item) return;
+      const code = String(Math.floor(100000 + Math.random() * 900000));
+      item.otp = code;
+      renderInbox();
+      showToast(`OTP ${code} received for ${item.serviceName}`, 'success');
+    }
+
+    function copyText(text, label = 'Copied') {
+      navigator.clipboard?.writeText(text).catch(() => {});
+      showToast(`${label}: ${text}`, 'info');
+    }
+
+    function renderInbox() {
+      const container = document.getElementById('inbox-container');
+      if (state.rentedNumbers.length === 0) {
+        container.innerHTML = `
+          <div class="rounded-2xl border border-dashed border-red-900/40 bg-obsidian-950/60 p-10 text-center">
+            <p class="text-sm font-semibold text-gray-200">No rented numbers in your inbox yet</p>
+            <p class="mt-1 text-xs text-gray-400">Select a service on the Get Numbers tab to rent a virtual number.</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = state.rentedNumbers.map(item => `
+        <div class="rounded-2xl border border-red-900/35 bg-obsidian-950/85 p-4 sm:p-5">
+          <div class="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
+            <div>
+              <div class="flex flex-wrap items-center gap-2">
+                <span class="rounded-lg bg-red-600/20 px-2.5 py-0.5 text-xs font-bold text-red-300 ring-1 ring-red-500/30">${item.serviceName}</span>
+                <span class="text-xs text-gray-400">${item.countryLabel}</span>
+                <span class="font-mono-code text-[11px] text-gray-500">#${item.id} • ${item.createdAt}</span>
+              </div>
+              <div class="mt-2 flex items-center gap-2.5">
+                <span class="font-mono-code text-lg font-extrabold tracking-wide text-white sm:text-xl">${item.phone}</span>
+                <button type="button" onclick="copyText('${item.phone}', 'Number copied')" class="rounded-lg border border-red-800/40 bg-obsidian-900 px-2.5 py-1 text-[11px] font-semibold text-gray-200 hover:border-red-500 hover:text-white">
+                  Copy
+                </button>
+              </div>
+            </div>
+
+            <div class="flex flex-col items-start gap-2 sm:items-end">
+              <span class="font-mono-code text-xs font-bold text-gray-300">Paid: ${formatINR(item.price)}</span>
+              ${
+                item.otp
+                  ? `<div class="flex items-center gap-2 rounded-xl border border-emerald-500/40 bg-emerald-950/60 px-3.5 py-2">
+                       <span class="text-[11px] font-semibold uppercase text-emerald-300">OTP:</span>
+                       <span class="font-mono-code text-base font-extrabold tracking-widest text-white">${item.otp}</span>
+                       <button type="button" onclick="copyText('${item.otp}', 'OTP copied')" class="ml-1 rounded bg-emerald-600/30 px-2 py-0.5 text-[11px] font-bold text-emerald-200 hover:bg-emerald-600/50">Copy</button>
+                     </div>`
+                  : `<button type="button" onclick="simulateOtp('${item.id}')" class="rounded-xl bg-red-600/90 px-3.5 py-2 text-xs font-bold text-white transition hover:bg-red-500">
+                       Check / Simulate SMS
+                     </button>`
+              }
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function renderHistory() {
+      const depList = document.getElementById('deposit-history-list');
+      if (state.deposits.length === 0) {
+        depList.innerHTML = `<p class="rounded-xl border border-red-900/25 bg-obsidian-950/60 p-4 text-xs text-gray-400">No deposit attempts recorded yet.</p>`;
+      } else {
+        depList.innerHTML = state.deposits.map(d => `
+          <div class="flex items-center justify-between rounded-xl border ${d.status === 'APPROVED' ? 'border-emerald-500/30 bg-emerald-950/20' : 'border-red-500/30 bg-red-950/25'} p-3.5 text-xs">
+            <div>
+              <p class="font-mono-code font-bold text-white">UTR: ${d.utr}</p>
+              <p class="mt-0.5 text-[11px] text-gray-400">${d.reason} • ${d.time}</p>
+            </div>
+            <div class="text-right">
+              <p class="font-mono-code text-sm font-extrabold ${d.status === 'APPROVED' ? 'text-emerald-400' : 'text-red-400'}">${formatINR(d.amount)}</p>
+              <span class="inline-block rounded px-1.5 py-0.5 text-[10px] font-bold ${d.status === 'APPROVED' ? 'bg-emerald-500/20 text-emerald-300' : 'bg-red-500/20 text-red-300'}">${d.status}</span>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      const ordList = document.getElementById('order-history-list');
+      if (state.rentedNumbers.length === 0) {
+        ordList.innerHTML = `<p class="rounded-xl border border-red-900/25 bg-obsidian-950/60 p-4 text-xs text-gray-400">No number orders placed yet.</p>`;
+      } else {
+        ordList.innerHTML = state.rentedNumbers.map(o => `
+          <div class="flex items-center justify-between rounded-xl border border-red-900/30 bg-obsidian-950/70 p-3.5 text-xs">
+            <div>
+              <p class="font-bold text-white">${o.serviceName} <span class="font-normal text-gray-400">(${o.countryLabel})</span></p>
+              <p class="font-mono-code mt-0.5 text-[11px] text-gray-300">${o.phone}</p>
+            </div>
+            <div class="text-right">
+              <p class="font-mono-code font-bold text-red-400">-${formatINR(o.price)}</p>
+              <p class="text-[11px] text-gray-500">${o.createdAt}</p>
+            </div>
+          </div>
+        `).join('');
+      }
+    }
+
+    function openDepositModal() {
+      const modal = document.getElementById('deposit-modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      document.getElementById('deposit-feedback').classList.add('hidden');
+      updateQrAmount();
+    }
+
+    function closeDepositModal() {
+      const modal = document.getElementById('deposit-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function setQuickAmount(val) {
+      document.getElementById('deposit-amount').value = val;
+      updateQrAmount();
+    }
+
+    function updateQrAmount() {
+      const raw = Number(document.getElementById('deposit-amount').value || MIN_DEPOSIT);
+      const safeAmt = raw > 0 ? raw : MIN_DEPOSIT;
+      const upiUrl = `upi://pay?pa=${encodeURIComponent(UPI_ID)}&pn=${encodeURIComponent('LEGAL SMS PANEL')}&am=${safeAmt}&cu=INR`;
+      document.getElementById('upi-qr-img').src = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(upiUrl)}`;
+    }
+
+    function copyUpiId() {
+      copyText(UPI_ID, 'UPI ID copied');
+    }
+
+    function handleDepositSubmit(event) {
+      event.preventDefault();
+      const amount = Number(document.getElementById('deposit-amount').value);
+      const utr = document.getElementById('deposit-utr').value.trim();
+      const feedback = document.getElementById('deposit-feedback');
+      const nowTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+      if (isNaN(amount) || amount < MIN_DEPOSIT) {
+        feedback.className = 'rounded-xl border border-red-500/40 bg-red-950/70 p-3 text-xs font-semibold text-red-200';
+        feedback.textContent = `Rejected: Minimum deposit amount is ₹${MIN_DEPOSIT}.`;
+        feedback.classList.remove('hidden');
+        showToast(`Minimum deposit is ₹${MIN_DEPOSIT}.`, 'error');
+        return;
+      }
+
+      if (utr !== REQUIRED_UTR) {
+        feedback.className = 'rounded-xl border border-red-500/40 bg-red-950/70 p-3 text-xs font-semibold text-red-200';
+        feedback.textContent = `Payment Rejected! Only UTR "${REQUIRED_UTR}" is accepted. "${utr || 'Empty'}" was not approved.`;
+        feedback.classList.remove('hidden');
+
+        state.deposits.unshift({
+          utr: utr || 'N/A',
+          amount,
+          status: 'REJECTED',
+          reason: `Invalid UTR (requires ${REQUIRED_UTR})`,
+          time: nowTime
+        });
+        renderHistory();
+        showToast(`Payment rejected! UTR must be ${REQUIRED_UTR}.`, 'error');
+        return;
+      }
+
+      // Approved when amount >= 50 and UTR === 111111111111
+      state.balance += amount;
+      state.deposits.unshift({
+        utr,
+        amount,
+        status: 'APPROVED',
+        reason: 'Verified via UTR 111111111111',
+        time: nowTime
+      });
+
+      updateHeaderStats();
+      updateOrderSummary();
+      renderHistory();
+
+      feedback.className = 'rounded-xl border border-emerald-500/40 bg-emerald-950/70 p-3 text-xs font-semibold text-emerald-200';
+      feedback.textContent = `Approved! ${formatINR(amount)} has been added to your LEGAL SMS PANEL wallet.`;
+      feedback.classList.remove('hidden');
+
+      showToast(`${formatINR(amount)} credited to wallet!`, 'success');
+      document.getElementById('deposit-utr').value = '';
+
+      setTimeout(() => {
+        closeDepositModal();
+      }, 900);
+    }
+
+    // Initial Render
+    renderCountries();
+    renderAnyOtpBanner();
+    renderServices();
+    updateOrderSummary();
+    updateHeaderStats();
+    renderInbox();
+    renderHistory();
+  </script>
+</body>
+</html>
